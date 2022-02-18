@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name='Console_manufacturer_sales'>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Console_id" type="xs:string" />
+                <xs:element name="Console_name" type="xs:string" />
+                <xs:element name="Manufacturer" type="xs:string" />
+                <xs:element name="Release_year" type="xs:integer" />
+                <xs:element name="Global_sales" type="xs:decimal" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
