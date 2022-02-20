@@ -19,7 +19,7 @@
     },
     "Score": {
       "description": "The metacritic score for the game",
-      "type": "integer",
+      "type": "float",
       "minimum": 0,
       "maximum": 100
     },
