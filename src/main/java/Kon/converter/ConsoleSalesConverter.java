@@ -6,7 +6,7 @@ import Kon.models.consoleSales.database.ConsoleSalesModel;
 import org.springframework.stereotype.Component;
 
 @Component
-public class consoleSalesConverter implements ModelConverter<ConsoleSalesRequest, ConsoleSalesModel, ConsoleSales> {
+public class ConsoleSalesConverter implements ModelConverter<ConsoleSalesRequest, ConsoleSalesModel, ConsoleSales> {
 
     @Override // This is the part in which validation logic can happen against schemas, if all logic passes then the data is posted
     public ConsoleSalesModel requestToModel(ConsoleSalesRequest request) {
