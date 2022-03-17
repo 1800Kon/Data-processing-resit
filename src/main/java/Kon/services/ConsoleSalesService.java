@@ -29,4 +29,15 @@ public class ConsoleSalesService {
     public Collection<ConsoleSales> getAll() {
         return consoleSalesConverter.modelToResponse(consoleSalesRepository.findAll());
     }
+
+    public ConsoleSales update(final Integer id, final ConsoleSalesRequest consoleSalesRequest) {
+        ConsoleSalesModel fromRequest = consoleSalesConverter.requestToModel(consoleSalesRequest);
+        ConsoleSalesModel toSave = consoleSalesRepository.getById(id);
+        toSave.setSales(fromRequest.getSales());
+        return consoleSalesConverter.modelToResponse(consoleSalesRepository.save(toSave));
+    }
+
+    public void delete(final Integer id) {
+        consoleSalesRepository.deleteById(id);
+    }
 }
