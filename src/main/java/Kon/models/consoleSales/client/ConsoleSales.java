@@ -5,7 +5,7 @@ public class ConsoleSales {
     private String consoleName;
     private String manufacturer;
     private int releaseYear;
-    private float sales;
+    private double sales;
 
     public ConsoleSales() {
 
@@ -42,11 +42,11 @@ public class ConsoleSales {
         this.releaseYear = releaseYear;
     }
 
-    public float getSales() {
+    public double getSales() {
         return sales;
     }
 
-    public void setSales(float sales) {
+    public void setSales(double sales) {
         this.sales = sales;
     }
 }

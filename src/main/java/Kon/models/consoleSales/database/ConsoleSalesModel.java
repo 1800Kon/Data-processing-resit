@@ -18,7 +18,7 @@ public class ConsoleSalesModel {
     @Column
     private int releaseYear;
     @Column
-    private float sales;
+    private double sales;
 
     public ConsoleSalesModel() {
 
@@ -60,11 +60,11 @@ public class ConsoleSalesModel {
         this.releaseYear = releaseYear;
     }
 
-    public float getSales() {
+    public double getSales() {
         return sales;
     }
 
-    public void setSales(float sales) {
+    public void setSales(double sales) {
         this.sales = sales;
     }
 }
