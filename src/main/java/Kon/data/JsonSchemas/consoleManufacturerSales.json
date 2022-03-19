@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Console manufacturer sales",
+  "description": "Dataset of console sales with manufacturer",
+  "type": "object",
+  "properties": {
+    "Console_id": {
+      "description": "The id name of the console",
+      "type": "string"
+    },
+    "Console_name": {
+      "description": "The long name of the console",
+      "type": "string"
+    },
+    "Manufacturer": {
+      "description": "The manufacturer of the console",
+      "type": "integer"
+    },
+    "Release_year": {
+      "description": "The year in which the console was released",
+      "type": "integer",
+      "minimum": 1900
+    },
+    "Global_sales": {
+      "description": "The number of sales globally in millions",
+      "type": "float",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "Console_id",
+    "Console_name",
+    "Manufacturer",
+    "Release_year",
+    "Global_sales"
+  ]
+}

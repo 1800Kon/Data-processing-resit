@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Video game sales with ratings",
+  "description": "Dataset of video game sales with ratings",
+  "type": "object",
+  "properties": {
+    "Game_name": {
+      "description": "The name of the game",
+      "type": "string"
+    },
+    "Platform": {
+      "description": "The name of the platform in which a game is released",
+      "type": "string"
+    },
+    "Year_of_release": {
+      "description": "The year in which a specific game was released",
+      "type": "integer"
+    },
+    "Company_name": {
+      "description": "The name of the company that released the game",
+      "type": "string"
+    },
+    "Global_sales": {
+      "description": "The number of sales globally in millions",
+      "type": "float",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "Game_name",
+    "Platform",
+    "Year_of_release",
+    "Company_name",
+    "Global_sales"
+  ]
+}

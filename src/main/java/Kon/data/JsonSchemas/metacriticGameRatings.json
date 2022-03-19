@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.com/product.schema.json",
+  "title": "Metacritic videogame ratings",
+  "description": "MetaCritic ratings for videogames",
+  "type": "object",
+  "properties": {
+    "Game_name": {
+      "description": "The name of the game",
+      "type": "string"
+    },
+    "Platform": {
+      "description": "The platform the game was released on",
+      "type": "string"
+    },
+    "Release_date": {
+      "description": "The date the game was released",
+      "type": "integer"
+    },
+    "Score": {
+      "description": "The metacritic score for the game",
+      "type": "float",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "User_score": {
+      "description": "The user score for the game",
+      "type": "float",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "Developer": {
+      "description": "The developer of the game",
+      "type": "string"
+    }
+  },
+  "required": [
+    "Game_name",
+    "Platform",
+    "Release_date",
+    "Score",
+    "User_score",
+    "Developer"
+  ]
+}
