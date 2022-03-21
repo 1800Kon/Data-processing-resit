@@ -8,7 +8,6 @@ import Kon.converter.ConsoleSalesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.Collection;
 
 @Service
@@ -22,6 +21,7 @@ public class ConsoleSalesService {
     ConsoleSalesRepository consoleSalesRepository;
 
     public ConsoleSales save(final ConsoleSalesRequest consoleSalesRequest){
+
         ConsoleSalesModel consoleSalesModel = consoleSalesConverter.requestToModel(consoleSalesRequest);
         return consoleSalesConverter.modelToResponse(consoleSalesRepository.save(consoleSalesModel));
     }
