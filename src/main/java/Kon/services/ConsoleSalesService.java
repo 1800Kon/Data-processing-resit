@@ -33,6 +33,10 @@ public class ConsoleSalesService {
     public ConsoleSales update(final Integer id, final ConsoleSalesRequest consoleSalesRequest) {
         ConsoleSalesModel fromRequest = consoleSalesConverter.requestToModel(consoleSalesRequest);
         ConsoleSalesModel toSave = consoleSalesRepository.getById(id);
+        toSave.setConsoleId(fromRequest.getConsoleId());
+        toSave.setConsoleName(fromRequest.getConsoleName());
+        toSave.setManufacturer(fromRequest.getManufacturer());
+        toSave.setReleaseYear(fromRequest.getReleaseYear());
         toSave.setSales(fromRequest.getSales());
         return consoleSalesConverter.modelToResponse(consoleSalesRepository.save(toSave));
     }

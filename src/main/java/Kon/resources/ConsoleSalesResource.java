@@ -5,6 +5,7 @@ import Kon.models.consoleSales.client.ConsoleSalesRequest;
 import Kon.services.ConsoleSalesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.xml.XmlMapper;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
@@ -14,8 +15,10 @@ import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
@@ -23,15 +26,11 @@ import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.xml.XMLConstants;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.validation.SchemaFactory;
-import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import java.util.List;
 
 @Path("/consoleSales")
 @Component
@@ -43,63 +42,104 @@ public class ConsoleSalesResource {
     ConsoleSalesService consoleSalesService;
 
     @POST
+    @Path("/post")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ConsoleSales save(final String raw) {
+    public String save(final String raw) {
         String trimmed = raw.trim();
         String firstChar = String.valueOf(trimmed.charAt(0));
         if (firstChar.equals("{")) {
             if (validateJson(raw)) {
                 try {
                     ConsoleSalesRequest consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
-                    return consoleSalesService.save(consoleSalesRequest);
+                    ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                    ow.writeValueAsString(consoleSalesService.save(consoleSalesRequest));
+                    return "Successfully added.";
                 } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                    return null;
+                    return "Invalid format.";
                 }
             } else {
-                return null;
+                return "Invalid format.";
             }
         } else if (firstChar.equals("<")) {
             if (validateXml(raw)) {
                 try {
                     XmlMapper xmlMapper = new XmlMapper();
                     ConsoleSalesRequest consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
-                    return consoleSalesService.save(consoleSalesRequest);
-                } catch (JsonMappingException | JsonParseException e) {
-                    e.printStackTrace();
-                    return null;
+                    consoleSalesService.save(consoleSalesRequest);
+                    return "Successfully added.";
                 } catch (IOException e) {
-                    e.printStackTrace();
-                    return null;
+                    return "Invalid format.";
                 }
             } else {
-                return null;
+                return "Invalid format.";
             }
         } else {
-            return null;
+            return "Please use JSON or XML.";
         }
     }
 
 
     @GET
+    @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Collection<ConsoleSales> getAll() {
         return consoleSalesService.getAll();
     }
 
     @PUT
-    @Path("{id}")
+    @Path("/put/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public ConsoleSales update(@PathParam("id") final Integer id, final ConsoleSalesRequest consoleSalesRequest) {
-        return consoleSalesService.update(id, consoleSalesRequest);
+    public String update(@PathParam("id") final Integer id, final String raw) {
+        String trimmed = raw.trim();
+        String firstChar = String.valueOf(trimmed.charAt(0));
+        if (firstChar.equals("{")) {
+            if (validateJson(raw)) {
+                ConsoleSalesRequest consoleSalesRequest;
+                try {
+                    consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
+                } catch (JsonProcessingException e) {
+                    return "Invalid format.";
+                }
+                ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+                try {
+                    ow.writeValueAsString(consoleSalesService.update(id, consoleSalesRequest));
+                } catch (JsonProcessingException e) {
+                    return "Invalid format.";
+                }
+                return "Successfully updated.";
+            } else {
+                return "Invalid format.";
+            }
+        } else if (firstChar.equals("<")) {
+            if (validateXml(raw)) {
+                XmlMapper xmlMapper = new XmlMapper();
+                ConsoleSalesRequest consoleSalesRequest;
+                try {
+                    consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
+                } catch (IOException e) {
+                    return "Invalid format.";
+                }
+                consoleSalesService.update(id, consoleSalesRequest);
+                return "Successfully updated.";
+            } else {
+                return "Invalid format.";
+            }
+        } else {
+            return "Please use JSON or XML.";
+        }
     }
 
     @DELETE
-    @Path("{id}")
-    public void delete(@PathParam("id") final Integer id) {
-        consoleSalesService.delete(id);
+    @Path("/delete/{id}")
+    public String delete(@PathParam("id") final Integer id) {
+        try {
+            consoleSalesService.delete(id);
+            return "Successfully deleted.";
+        } catch (EmptyResultDataAccessException e) {
+            return "No entry with this id was found.";
+        }
     }
 
     public Boolean validateJson(String consoleSalesRequest) {
@@ -110,7 +150,6 @@ public class ConsoleSalesResource {
             schema.validate(new JSONObject(consoleSalesRequest));
             return true;
         } catch (ValidationException e) {
-            e.printStackTrace();
             return false;
         }
     }
@@ -122,8 +161,7 @@ public class ConsoleSalesResource {
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(consoleSalesRequest.getBytes())));
             return true;
-        } catch (SAXException | IOException e) {
-            e.printStackTrace();
+        } catch (IOException | SAXException e) {
             return false;
         }
     }

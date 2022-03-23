@@ -1,5 +1,8 @@
 package Kon.models.consoleSales.client;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class ConsoleSales {
     private String consoleId;
     private String consoleName;
