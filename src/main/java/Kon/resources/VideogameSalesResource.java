@@ -2,7 +2,10 @@ package Kon.resources;
 
 import Kon.models.consoleSales.client.ConsoleSales;
 import Kon.models.consoleSales.client.ConsoleSalesRequest;
+import Kon.models.videogameSales.client.VideogameSales;
+import Kon.models.videogameSales.client.VideogameSalesRequest;
 import Kon.services.ConsoleSalesService;
+import Kon.services.VideogameSalesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -16,25 +19,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-@Path("/consoleSales")
+@Path("/videogameSales")
 @Component
-public class ConsoleSalesResource {
-
+public class VideogameSalesResource {
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    ConsoleSalesService consoleSalesService;
+    VideogameSalesService videogameSalesService;
 
     @POST
     @Path("/post")
@@ -46,9 +49,9 @@ public class ConsoleSalesResource {
         if (firstChar.equals("{")) {
             if (validateJson(raw)) {
                 try {
-                    ConsoleSalesRequest consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
+                    VideogameSalesRequest videogameSalesRequest = objectMapper.readValue(raw, VideogameSalesRequest.class);
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                    ow.writeValueAsString(consoleSalesService.save(consoleSalesRequest));
+                    ow.writeValueAsString(videogameSalesService.save(videogameSalesRequest));
                     return "Successfully added.";
                 } catch (JsonProcessingException e) {
                     return "Invalid format.";
@@ -60,8 +63,8 @@ public class ConsoleSalesResource {
             if (validateXml(raw)) {
                 try {
                     XmlMapper xmlMapper = new XmlMapper();
-                    ConsoleSalesRequest consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
-                    consoleSalesService.save(consoleSalesRequest);
+                    VideogameSalesRequest videogameSalesRequest = xmlMapper.readValue(raw, VideogameSalesRequest.class);
+                    videogameSalesService.save(videogameSalesRequest);
                     return "Successfully added.";
                 } catch (IOException e) {
                     return "Invalid format.";
@@ -74,13 +77,13 @@ public class ConsoleSalesResource {
         }
     }
 
-
     @GET
     @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<ConsoleSales> getAll() {
-        return consoleSalesService.getAll();
+    public Collection<VideogameSales> getAll() {
+        return videogameSalesService.getAll();
     }
+
 
     @PUT
     @Path("/put/{id}")
@@ -91,15 +94,15 @@ public class ConsoleSalesResource {
         String firstChar = String.valueOf(trimmed.charAt(0));
         if (firstChar.equals("{")) {
             if (validateJson(raw)) {
-                ConsoleSalesRequest consoleSalesRequest;
+                VideogameSalesRequest videogameSalesRequest;
                 try {
-                    consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
+                    videogameSalesRequest = objectMapper.readValue(raw, VideogameSalesRequest.class);
                 } catch (JsonProcessingException e) {
                     return "Invalid format.";
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
-                    ow.writeValueAsString(consoleSalesService.update(id, consoleSalesRequest));
+                    ow.writeValueAsString(videogameSalesService.update(id, videogameSalesRequest));
                 } catch (JsonProcessingException e) {
                     return "Invalid format.";
                 }
@@ -110,13 +113,13 @@ public class ConsoleSalesResource {
         } else if (firstChar.equals("<")) {
             if (validateXml(raw)) {
                 XmlMapper xmlMapper = new XmlMapper();
-                ConsoleSalesRequest consoleSalesRequest;
+                VideogameSalesRequest videogameSalesRequest;
                 try {
-                    consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
+                    videogameSalesRequest = xmlMapper.readValue(raw, VideogameSalesRequest.class);
                 } catch (IOException e) {
                     return "Invalid format.";
                 }
-                consoleSalesService.update(id, consoleSalesRequest);
+                videogameSalesService.update(id, videogameSalesRequest);
                 return "Successfully updated.";
             } else {
                 return "Invalid format.";
@@ -130,16 +133,17 @@ public class ConsoleSalesResource {
     @Path("/delete/{id}")
     public String delete(@PathParam("id") final Integer id) {
         try {
-            consoleSalesService.delete(id);
+            videogameSalesService.delete(id);
             return "Successfully deleted.";
         } catch (EmptyResultDataAccessException e) {
             return "No entry with this id was found.";
         }
     }
 
+
     public Boolean validateJson(String consoleSalesRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/consoleManufacturerSales.json");
+            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videoGameSalesWithRatings.json");
             JSONObject rawSchema = new JSONObject(new JSONTokener(is));
             Schema schema = SchemaLoader.load(rawSchema);
             schema.validate(new JSONObject(consoleSalesRequest));
@@ -152,7 +156,7 @@ public class ConsoleSalesResource {
     public Boolean validateXml(String consoleSalesRequest) {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            javax.xml.validation.Schema schema = schemaFactory.newSchema(new StreamSource(this.getClass().getResourceAsStream("/data/XmlSchemas/consoleManufacturerSales.xsd")));
+            javax.xml.validation.Schema schema = schemaFactory.newSchema(new StreamSource(this.getClass().getResourceAsStream("/data/XmlSchemas/videoGameSalesWithRatings.xsd")));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(consoleSalesRequest.getBytes())));
             return true;
@@ -160,5 +164,4 @@ public class ConsoleSalesResource {
             return false;
         }
     }
-
 }
