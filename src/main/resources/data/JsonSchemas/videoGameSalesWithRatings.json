@@ -1,37 +1,45 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://example.com/product.schema.json",
+  "$schema": "https://json-schema.org/draft-07/schema",
   "title": "Video game sales with ratings",
   "description": "Dataset of video game sales with ratings",
   "type": "object",
   "properties": {
-    "Game_name": {
+    "name": {
       "description": "The name of the game",
       "type": "string"
     },
-    "Platform": {
-      "description": "The name of the platform in which a game is released",
+    "platform": {
+      "description": "The platform for which the game was released",
       "type": "string"
     },
-    "Year_of_release": {
+    "releaseYear": {
       "description": "The year in which a specific game was released",
-      "type": "integer"
+      "type": "number"
     },
-    "Company_name": {
-      "description": "The name of the company that released the game",
+    "genre": {
+      "description": "The genre of the game",
       "type": "string"
     },
-    "Global_sales": {
-      "description": "The number of sales globally in millions",
-      "type": "float",
-      "minimum": 0
+    "publisher": {
+      "description": "The publisher of the game",
+      "type": "string"
+    },
+    "globalSales": {
+      "description": "Global sales in millions.",
+      "type": "number"
+    },
+    "critScore": {
+      "description": "The score of the game",
+      "type": "number"
     }
   },
   "required": [
-    "Game_name",
-    "Platform",
-    "Year_of_release",
-    "Company_name",
-    "Global_sales"
+    "name",
+    "platform",
+    "releaseYear",
+    "genre",
+    "publisher",
+    "globalSales",
+    "critScore"
   ]
 }

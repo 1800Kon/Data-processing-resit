@@ -3,13 +3,13 @@
     <xs:element name="root">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="name" type="xs:string"/>
-                <xs:element name="platform" type="xs:string"/>
-                <xs:element name="releaseYear" type="xs:int"/>
-                <xs:element name="genre" type="xs:string"/>
-                <xs:element name="publisher" type="xs:string"/>
-                <xs:element name="globalSales" type="xs:decimal"/>
-                <xs:element name="critScore" type="xs:decimal"/>
+                <xs:element name="name" type="xs:string" />
+                <xs:element name="platform" type="xs:string" />
+                <xs:element name="releaseYear" type="xs:int" />
+                <xs:element name="score" type="xs:int" />
+                <xs:element name="userScore" type="xs:decimal" />
+                <xs:element name="developer" type="xs:string" />
+                <xs:element name="genre" type="xs:string" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -20,16 +20,17 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="globalSales">
-        <xs:restriction base="xs:decimal">
+    <xs:simpleType name="score">
+        <xs:restriction base="xs:int">
             <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="100"/>
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="critScore">
+    <xs:simpleType name="userScore">
         <xs:restriction base="xs:decimal">
             <xs:minInclusive value="0"/>
+            <xs:maxInclusive value="10"/>
         </xs:restriction>
     </xs:simpleType>
-
 </xs:schema>

@@ -3,11 +3,11 @@ package Kon.models.videogameSales.client;
 public class VideogameSalesRequest {
     private String name;
     private String platform;
-    private int releaseYear;
+    private Integer releaseYear;
     private String Genre;
     private String publisher;
-    private double globalSales;
-    private double critScore;
+    private Float globalSales;
+    private Float critScore;
 
     public String getName() {
         return name;
@@ -25,11 +25,11 @@ public class VideogameSalesRequest {
         this.platform = platform;
     }
 
-    public int getReleaseYear() {
+    public Integer getReleaseYear() {
         return releaseYear;
     }
 
-    public void setReleaseYear(int releaseYear) {
+    public void setReleaseYear(Integer releaseYear) {
         this.releaseYear = releaseYear;
     }
 
@@ -49,19 +49,19 @@ public class VideogameSalesRequest {
         this.publisher = publisher;
     }
 
-    public double getGlobalSales() {
+    public Float getGlobalSales() {
         return globalSales;
     }
 
-    public void setGlobalSales(double globalSales) {
+    public void setGlobalSales(Float globalSales) {
         this.globalSales = globalSales;
     }
 
-    public double getCritScore() {
+    public Float getCritScore() {
         return critScore;
     }
 
-    public void setCritScore(double critScore) {
+    public void setCritScore(Float critScore) {
         this.critScore = critScore;
     }
 }

@@ -16,12 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
 import org.xml.sax.SAXException;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -94,13 +95,13 @@ public class ConsoleSalesResource {
                 ConsoleSalesRequest consoleSalesRequest;
                 try {
                     consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
-                } catch (JsonProcessingException e) {
+                } catch (Exception e) {
                     return "Invalid format.";
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
                     ow.writeValueAsString(consoleSalesService.update(id, consoleSalesRequest));
-                } catch (JsonProcessingException e) {
+                } catch (Exception e) {
                     return "Invalid format.";
                 }
                 return "Successfully updated.";
@@ -113,7 +114,7 @@ public class ConsoleSalesResource {
                 ConsoleSalesRequest consoleSalesRequest;
                 try {
                     consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
-                } catch (IOException e) {
+                } catch (Exception e) {
                     return "Invalid format.";
                 }
                 consoleSalesService.update(id, consoleSalesRequest);
@@ -132,7 +133,7 @@ public class ConsoleSalesResource {
         try {
             consoleSalesService.delete(id);
             return "Successfully deleted.";
-        } catch (EmptyResultDataAccessException e) {
+        } catch (Exception e) {
             return "No entry with this id was found.";
         }
     }

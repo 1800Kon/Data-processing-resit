@@ -1,9 +1,6 @@
 package Kon.services;
 
 import Kon.converter.VideogameSalesConverter;
-import Kon.models.consoleSales.client.ConsoleSales;
-import Kon.models.consoleSales.client.ConsoleSalesRequest;
-import Kon.models.consoleSales.database.ConsoleSalesModel;
 import Kon.models.videogameSales.client.VideogameSales;
 import Kon.models.videogameSales.client.VideogameSalesRequest;
 import Kon.models.videogameSales.database.VideogameSalesModel;

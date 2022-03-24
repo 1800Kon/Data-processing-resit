@@ -1,13 +1,14 @@
 package Kon.services;
 
+import Kon.converter.ConsoleSalesConverter;
 import Kon.models.consoleSales.client.ConsoleSales;
 import Kon.models.consoleSales.client.ConsoleSalesRequest;
 import Kon.models.consoleSales.database.ConsoleSalesModel;
 import Kon.repositories.ConsoleSalesRepository;
-import Kon.converter.ConsoleSalesConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collection;
 
 @Service

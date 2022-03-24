@@ -3,32 +3,32 @@ package Kon.models.videogameSales.database;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "videogame_sales")
+@Table(name = "videogame_sales_5")
 public class VideogameSalesModel {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Integer id;
     @Column
     private String name;
     @Column
     private String platform;
     @Column
-    private int releaseYear;
+    private Integer releaseYear;
     @Column
-    private String Genre;
+    private String genre;
     @Column
     private String publisher;
     @Column
-    private double globalSales;
+    private Float globalSales;
     @Column
-    private double critScore;
+    private Float critScore;
 
     public VideogameSalesModel() {
 
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -52,20 +52,20 @@ public class VideogameSalesModel {
         this.platform = platform;
     }
 
-    public int getReleaseYear() {
+    public Integer getReleaseYear() {
         return releaseYear;
     }
 
-    public void setReleaseYear(int releaseYear) {
+    public void setReleaseYear(Integer releaseYear) {
         this.releaseYear = releaseYear;
     }
 
     public String getGenre() {
-        return Genre;
+        return genre;
     }
 
     public void setGenre(String genre) {
-        Genre = genre;
+        this.genre = genre;
     }
 
     public String getPublisher() {
@@ -76,19 +76,19 @@ public class VideogameSalesModel {
         this.publisher = publisher;
     }
 
-    public double getGlobalSales() {
+    public Float getGlobalSales() {
         return globalSales;
     }
 
-    public void setGlobalSales(double globalSales) {
+    public void setGlobalSales(Float globalSales) {
         this.globalSales = globalSales;
     }
 
-    public double getCritScore() {
+    public Float getCritScore() {
         return critScore;
     }
 
-    public void setCritScore(double critScore) {
+    public void setCritScore(Float critScore) {
         this.critScore = critScore;
     }
 }

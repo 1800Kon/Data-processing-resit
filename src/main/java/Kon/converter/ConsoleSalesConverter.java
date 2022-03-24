@@ -1,7 +1,7 @@
 package Kon.converter;
 
-import Kon.models.consoleSales.client.ConsoleSalesRequest;
 import Kon.models.consoleSales.client.ConsoleSales;
+import Kon.models.consoleSales.client.ConsoleSalesRequest;
 import Kon.models.consoleSales.database.ConsoleSalesModel;
 import org.springframework.stereotype.Component;
 
