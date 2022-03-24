@@ -1,0 +1,44 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API website</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="text/javascript" src="backend.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="inputs">
+        <label>API URL</label>
+        <input
+          type="text"
+          placeholder="http://localhost:8080/api/"
+          id="urlCall"
+        />
+        <label>CALL CONTENT</label>
+        <input type="text" placeholder="JSON / XML" id="callContent" />
+        <!-- radio buttons -->
+        <label>CALL TYPE</label>
+        <input
+          type="radio"
+          name="responseType"
+          value="JSON"
+          checked
+          class="smallRadio"
+        />JSON
+        <input
+          type="radio"
+          name="responseType"
+          value="XML"
+          class="smallRadio"
+        />XML
+        <button onclick="call()">CALL</button>
+      </div>
+      <div class="container2">
+        <div class="displayBox" id="displayBox">
+
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

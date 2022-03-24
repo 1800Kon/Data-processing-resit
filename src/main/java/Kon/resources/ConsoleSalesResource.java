@@ -117,7 +117,11 @@ public class ConsoleSalesResource {
                 } catch (Exception e) {
                     return "Invalid format.";
                 }
+                try {
                 consoleSalesService.update(id, consoleSalesRequest);
+                } catch (Exception e) {
+                    return "No entry with this id was found.";
+                }
                 return "Successfully updated.";
             } else {
                 return "Invalid format.";
@@ -145,7 +149,7 @@ public class ConsoleSalesResource {
             Schema schema = SchemaLoader.load(rawSchema);
             schema.validate(new JSONObject(consoleSalesRequest));
             return true;
-        } catch (ValidationException e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -157,7 +161,7 @@ public class ConsoleSalesResource {
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(consoleSalesRequest.getBytes())));
             return true;
-        } catch (IOException | SAXException e) {
+        } catch (Exception e) {
             return false;
         }
     }
