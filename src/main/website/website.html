@@ -5,6 +5,7 @@
     <title>API website</title>
     <link rel="stylesheet" href="style.css" />
     <script type="text/javascript" src="backend.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
   </head>
   <body>
     <div class="container">
@@ -33,11 +34,11 @@
           class="smallRadio"
         />XML
         <button onclick="call()">CALL</button>
+        <button onclick="graph()">GRAPH</button>
       </div>
       <div class="container2">
-        <div class="displayBox" id="displayBox">
-
-        </div>
+        <div class="displayBox" id="displayBox"></div>
+        <canvas id="myChart" style="width: 200px; height:100px; max-width: 700px; display: inline-block;"></canvas>
       </div>
     </div>
   </body>
