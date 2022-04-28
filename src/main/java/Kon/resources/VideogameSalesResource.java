@@ -19,7 +19,9 @@ import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
@@ -27,7 +29,9 @@ import javax.xml.validation.Validator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 @Path("/videogameSales")
 @Component
@@ -43,8 +47,11 @@ public class VideogameSalesResource {
     @GET
     @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<VideogameSales> getAll() {
-        return videogameSalesService.getAll();
+    public Response getAll() {
+        Collection<VideogameSales> collection = videogameSalesService.getAll();
+        GenericEntity<Collection<VideogameSales>> entity = new GenericEntity<>(collection) {
+        };
+        return Response.ok(entity).build();
     }
 
     @POST
@@ -59,12 +66,12 @@ public class VideogameSalesResource {
                     VideogameSalesRequest videogameSalesRequest = objectMapper.readValue(raw, VideogameSalesRequest.class);
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     ow.writeValueAsString(videogameSalesService.save(videogameSalesRequest));
-                    return "Successfully added.";
+                    return "[{\"Response\": Successfully added}]";
                 } catch (Exception e) {
-                    return e.toString();
+                    return "[{\"Response\": "+ e +"}]";
                 }
             } else {
-                return validated;
+                return "[{\"Response\": "+ validated +"}]";
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -73,12 +80,12 @@ public class VideogameSalesResource {
                     XmlMapper xmlMapper = new XmlMapper();
                     VideogameSalesRequest videogameSalesRequest = xmlMapper.readValue(raw, VideogameSalesRequest.class);
                     videogameSalesService.save(videogameSalesRequest);
-                    return "Successfully added.";
+                    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+"Success"+"</response></videoGameSales>";
                 } catch (Exception e) {
-                    return e.toString();
+                    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+ e +"</response></videoGameSales>";
                 }
             } else {
-                return validated;
+                return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+validated+"</response></videoGameSales>";
             }
         } else {
             return "Please use JSON or XML.";
@@ -98,17 +105,17 @@ public class VideogameSalesResource {
                 try {
                     videogameSalesRequest = objectMapper.readValue(raw, VideogameSalesRequest.class);
                 } catch (Exception e) {
-                    return e.toString();
+                    return "[{\"Response\": "+ e +"}]";
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
                     ow.writeValueAsString(videogameSalesService.update(id, videogameSalesRequest));
                 } catch (Exception e) {
-                    return e.toString();
+                    return "[{\"Response\": "+ e +"}]";
                 }
-                return "Successfully updated.";
+                return "[{\"Response\": Successfully updated}]";
             } else {
-                return validated;
+                return "[{\"Response\": "+ validated +"}]";
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -118,16 +125,17 @@ public class VideogameSalesResource {
                 try {
                     videogameSalesRequest = xmlMapper.readValue(raw, VideogameSalesRequest.class);
                 } catch (IOException e) {
-                    return e.toString();
+                    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+e+"</response></videoGameSales>";
+
                 }
                 try {
                 videogameSalesService.update(id, videogameSalesRequest);
                 }catch (Exception e) {
-                    return e.toString();
+                    return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+e+"</response></videoGameSales>";
                 }
-                return "Successfully updated.";
+                return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>Successfully updated</response></videoGameSales>";
             } else {
-                return validated;
+                return "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+validated+"</response></videoGameSales>";
             }
         } else {
             return "Please use JSON or XML.";
