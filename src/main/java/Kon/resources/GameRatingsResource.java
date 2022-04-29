@@ -8,18 +8,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.xml.XmlMapper;
 import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
@@ -44,15 +43,18 @@ public class GameRatingsResource {
     @GET
     @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<GameRatings> getAll() {
-        return gameRatingsService.getAll();
+    public Response getAll() {
+
+        Collection<GameRatings> collection = gameRatingsService.getAll();
+        GenericEntity<Collection<GameRatings>> entity = new GenericEntity<>(collection) {};
+        return Response.ok(entity).build();
     }
 
     @POST
     @Path("/post")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String save(final String raw) {
+    public Response save(final String raw) {
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
@@ -60,12 +62,12 @@ public class GameRatingsResource {
                     GameRatingsRequest gameRatingsRequest = objectMapper.readValue(raw, GameRatingsRequest.class);
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     ow.writeValueAsString(gameRatingsService.save(gameRatingsRequest));
-                    return "Successfully added.";
+                    return Response.status(201, "[{\"Response\": Successfully added}]").build();
                 } catch (JsonProcessingException e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+ e +"}]").build();
                 }
             } else {
-                return validated;
+                return Response.status(400, "[{\"Response\": "+ validated +"}]").build();
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -74,15 +76,17 @@ public class GameRatingsResource {
                     XmlMapper xmlMapper = new XmlMapper();
                     GameRatingsRequest gameRatingsRequest = xmlMapper.readValue(raw, GameRatingsRequest.class);
                     gameRatingsService.save(gameRatingsRequest);
-                    return "Successfully added.";
+                    return Response.status(201, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+"Success"+"</response></gameRatings>").build();
                 } catch (IOException e) {
-                    return e.toString();
+                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+ e +"</response></gameRatings>").build();
+
                 }
             } else {
-                return validated;
+                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+ validated +"</response></gameRatings>").build();
+
             }
         } else {
-            return "Please use JSON or XML.";
+            return Response.status(400, "Please use JSON or XML.").build();
         }
     }
 
@@ -90,7 +94,7 @@ public class GameRatingsResource {
     @Path("/put/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String update(@PathParam("id") final Integer id, final String raw) {
+    public Response update(@PathParam("id") final Integer id, final String raw) {
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
@@ -98,17 +102,17 @@ public class GameRatingsResource {
                 try {
                     gameRatingsRequest = objectMapper.readValue(raw, GameRatingsRequest.class);
                 } catch (JsonProcessingException e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
                     ow.writeValueAsString(gameRatingsService.update(id, gameRatingsRequest));
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
-                return "Successfully updated.";
+                return Response.status(200, "[{\"Response\": Successfully updated}]").build();
             } else {
-                return validated;
+                return Response.status(400, "[{\"Response\": "+validated+"}]").build();
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -118,30 +122,30 @@ public class GameRatingsResource {
                 try {
                     gameRatingsRequest = xmlMapper.readValue(raw, GameRatingsRequest.class);
                 } catch (IOException e) {
-                    return e.toString();
+                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+e+"</response></gameRatings>").build();
                 }
                 try {
                 gameRatingsService.update(id, gameRatingsRequest);
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(404, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+e+"</response></gameRatings>").build();
                 }
-                return "Successfully updated.";
+                return Response.status(200, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>Successfully updated</response></gameRatings>").build();
             } else {
-                return validated;
+                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+validated+"</response></gameRatings>").build();
             }
         } else {
-            return "Please use JSON or XML.";
+            return Response.status(400, "Please use JSON or XML").build();
         }
     }
 
     @DELETE
     @Path("/delete/{id}")
-    public String delete(@PathParam("id") final Integer id) {
+    public Response delete(@PathParam("id") final Integer id) {
         try {
             gameRatingsService.delete(id);
-            return "Successfully deleted.";
+            return Response.status(200, "Successfully deleted").build();
         } catch (Exception e) {
-            return e.toString();
+            return Response.status(204, e.toString()).build();
         }
     }
 

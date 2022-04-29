@@ -8,18 +8,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.xml.XmlMapper;
 import org.everit.json.schema.Schema;
-import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Component;
-import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.XMLConstants;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.SchemaFactory;
@@ -45,7 +44,7 @@ public class ConsoleSalesResource {
     @Path("/post")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String save(final String raw) {
+    public Response save(final String raw) {
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
@@ -53,12 +52,12 @@ public class ConsoleSalesResource {
                     ConsoleSalesRequest consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                     ow.writeValueAsString(consoleSalesService.save(consoleSalesRequest));
-                    return "Successfully added.";
+                    return Response.status(201, "[{\"Response\": Successfully added}]").build();
                 } catch (JsonProcessingException e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+ e +"}]").build();
                 }
             } else {
-                return validated;
+                return Response.status(400, "[{\"Response\": "+ validated +"}]").build();
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -67,15 +66,15 @@ public class ConsoleSalesResource {
                     XmlMapper xmlMapper = new XmlMapper();
                     ConsoleSalesRequest consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
                     consoleSalesService.save(consoleSalesRequest);
-                    return "Successfully added.";
+                    return Response.status(201, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+"Success"+"</response></consoleSales>").build();
                 } catch (IOException e) {
-                    return e.toString();
+                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
                 }
             } else {
-                return validated;
+                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+validated+"</response></consoleSales>").build();
             }
         } else {
-            return "Please use JSON or XML.";
+            return Response.status(400, "Please use JSON or XML.").build();
         }
     }
 
@@ -83,15 +82,18 @@ public class ConsoleSalesResource {
     @GET
     @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Collection<ConsoleSales> getAll() {
-        return consoleSalesService.getAll();
+    public Response getAll() {
+        Collection<ConsoleSales> collection = consoleSalesService.getAll();
+        GenericEntity<Collection<ConsoleSales>> entity = new GenericEntity<>(collection) {
+        };
+        return Response.ok(entity).build();
     }
 
     @PUT
     @Path("/put/{id}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public String update(@PathParam("id") final Integer id, final String raw) {
+    public Response update(@PathParam("id") final Integer id, final String raw) {
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
@@ -99,17 +101,17 @@ public class ConsoleSalesResource {
                 try {
                     consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
                     ow.writeValueAsString(consoleSalesService.update(id, consoleSalesRequest));
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
-                return "Successfully updated.";
+                return Response.status(200, "[{\"Response\": Successfully updated}]").build();
             } else {
-                return validated;
+                return Response.status(400, "[{\"Response\": "+validated+"}]").build();
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
@@ -119,30 +121,30 @@ public class ConsoleSalesResource {
                 try {
                     consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
                 }
                 try {
                 consoleSalesService.update(id, consoleSalesRequest);
                 } catch (Exception e) {
-                    return e.toString();
+                    return Response.status(404, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
                 }
-                return "Successfully updated.";
+                return Response.status(200, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>Successfully updated</response></consoleSales>").build();
             } else {
-                return validated;
+                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+validated+"</response></consoleSales>").build();
             }
         } else {
-            return "Please use JSON or XML.";
+            return Response.status(400, "Please use JSON or XML").build();
         }
     }
 
     @DELETE
     @Path("/delete/{id}")
-    public String delete(@PathParam("id") final Integer id) {
+    public Response delete(@PathParam("id") final Integer id) {
         try {
             consoleSalesService.delete(id);
-            return "Successfully deleted.";
+            return Response.status(200, "Successfully deleted").build();
         } catch (Exception e) {
-            return e.toString();
+            return Response.status(204, e.toString()).build();
         }
     }
 
