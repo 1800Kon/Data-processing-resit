@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class ConsoleSales {
+    private Integer id;
     private String consoleId;
     private String consoleName;
     private String manufacturer;
@@ -13,6 +14,15 @@ public class ConsoleSales {
     public ConsoleSales() {
 
     }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getConsoleId() {
         return consoleId;
     }

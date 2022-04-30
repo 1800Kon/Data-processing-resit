@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="root">
+    <xs:element name="videogameSales">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="name" type="xs:string"/>
                 <xs:element name="platform" type="xs:string"/>
-                <xs:element name="releaseYear" type="xs:int"/>
+                <xs:element name="releaseYear" type="releaseYear"/>
                 <xs:element name="genre" type="xs:string"/>
                 <xs:element name="publisher" type="xs:string"/>
-                <xs:element name="globalSales" type="xs:decimal"/>
-                <xs:element name="critScore" type="xs:decimal"/>
+                <xs:element name="globalSales" type="globalSales"/>
+                <xs:element name="critScore" type="critScore"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

@@ -24,6 +24,7 @@ public class VideogameSalesConverter implements ModelConverter<VideogameSalesReq
     @Override
     public VideogameSales modelToResponse(VideogameSalesModel videogameSalesModel) {
         VideogameSales videogameSales = new VideogameSales();
+        videogameSales.setId(videogameSalesModel.getId());
         videogameSales.setName(videogameSalesModel.getName());
         videogameSales.setPlatform(videogameSalesModel.getPlatform());
         videogameSales.setReleaseYear(videogameSalesModel.getReleaseYear());

@@ -4,6 +4,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class VideogameSales {
+    private Integer id;
     private String name;
     private String platform;
     private int releaseYear;
@@ -14,6 +15,14 @@ public class VideogameSales {
 
     public VideogameSales() {
 
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {

@@ -23,6 +23,7 @@ public class GameRatingsConverter implements ModelConverter<GameRatingsRequest, 
     @Override
     public GameRatings modelToResponse(GameRatingsModel model) {
         GameRatings gameRatings = new GameRatings();
+        gameRatings.setId(model.getId());
         gameRatings.setName(model.getName());
         gameRatings.setPlatform(model.getPlatform());
         gameRatings.setReleaseYear(model.getReleaseYear());

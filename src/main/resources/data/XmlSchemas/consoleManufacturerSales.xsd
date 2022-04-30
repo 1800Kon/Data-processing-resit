@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:element name="root">
+    <xs:element name="consoleSales">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="consoleId" type="xs:string" />
                 <xs:element name="consoleName" type="xs:string" />
                 <xs:element name="manufacturer" type="xs:string" />
-                <xs:element name="releaseYear" type="xs:unsignedShort" />
-                <xs:element name="sales" type="xs:decimal" />
+                <xs:element name="releaseYear" type="releaseYear" />
+                <xs:element name="sales" type="sales" />
             </xs:sequence>
         </xs:complexType>
     </xs:element>

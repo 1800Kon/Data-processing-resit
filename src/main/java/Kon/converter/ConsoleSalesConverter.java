@@ -22,6 +22,7 @@ public class ConsoleSalesConverter implements ModelConverter<ConsoleSalesRequest
     @Override
     public ConsoleSales modelToResponse(ConsoleSalesModel model) {
         ConsoleSales consoleSales = new ConsoleSales();
+        consoleSales.setId(model.getId());
         consoleSales.setConsoleId(model.getConsoleId());
         consoleSales.setConsoleName(model.getConsoleName());
         consoleSales.setManufacturer(model.getManufacturer());
