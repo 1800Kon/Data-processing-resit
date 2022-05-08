@@ -154,7 +154,7 @@ public class VideogameSalesResource {
     public String validateJson(String gameSalesRequest) {
         try {
             // Validate the JSON body of the request
-            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videogameSalesWithRatings.json");
+            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videoGameSalesWithRatings.json");
             JSONObject rawSchema = new JSONObject(new JSONTokener(is));
             Schema schema = SchemaLoader.load(rawSchema);
             schema.validate(new JSONObject(gameSalesRequest));
