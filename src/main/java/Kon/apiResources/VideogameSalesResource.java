@@ -1,4 +1,4 @@
-package Kon.resources;
+package Kon.apiResources;
 
 import Kon.models.videogameSales.client.VideogameSales;
 import Kon.models.videogameSales.client.VideogameSalesRequest;
@@ -42,6 +42,7 @@ public class VideogameSalesResource {
     @Path("/getall")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response getAll() {
+        // Wrapping the collection in a generic entity so the parsing to XML is possible
         Collection<VideogameSales> collection = videogameSalesService.getAll();
         GenericEntity<Collection<VideogameSales>> entity = new GenericEntity<>(collection) {
         };
@@ -53,6 +54,7 @@ public class VideogameSalesResource {
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response save(final String raw) {
+        // Check the request headers
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
@@ -76,6 +78,7 @@ public class VideogameSalesResource {
                     videogameSalesService.save(videogameSalesRequest);
                     return Response.status(201, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+"Success"+"</response></videoGameSales>").build();
                 } catch (Exception e) {
+                    // Catch errors in the saving process
                     return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><videoGameSales><response>"+e+"</response></videoGameSales>").build();
                 }
             } else {
@@ -113,6 +116,7 @@ public class VideogameSalesResource {
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
             if (validated.equals("true")) {
+                // Convert XML to the correct format to save
                 XmlMapper xmlMapper = new XmlMapper();
                 VideogameSalesRequest videogameSalesRequest;
                 try {
@@ -141,6 +145,7 @@ public class VideogameSalesResource {
             videogameSalesService.delete(id);
             return Response.status(200, "Successfully deleted").build();
         } catch (Exception e) {
+            // Catch missing IDs
             return Response.status(204, e.toString()).build();
         }
     }
@@ -148,7 +153,8 @@ public class VideogameSalesResource {
 
     public String validateJson(String gameSalesRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videoGameSalesWithRatings.json");
+            // Validate the JSON body of the request
+            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videogameSalesWithRatings.json");
             JSONObject rawSchema = new JSONObject(new JSONTokener(is));
             Schema schema = SchemaLoader.load(rawSchema);
             schema.validate(new JSONObject(gameSalesRequest));
@@ -160,6 +166,7 @@ public class VideogameSalesResource {
 
     public String validateXml(String gameSalesRequest) {
         try {
+            // Validate the XML body of the request
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             javax.xml.validation.Schema schema = schemaFactory.newSchema(new StreamSource(this.getClass().getResourceAsStream("/data/XmlSchemas/videoGameSalesWithRatings.xsd")));
             Validator validator = schema.newValidator();

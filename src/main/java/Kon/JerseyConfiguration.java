@@ -1,8 +1,8 @@
 package Kon;
 
-import Kon.resources.ConsoleSalesResource;
-import Kon.resources.GameRatingsResource;
-import Kon.resources.VideogameSalesResource;
+import Kon.apiResources.ConsoleSalesResource;
+import Kon.apiResources.GameRatingsResource;
+import Kon.apiResources.VideogameSalesResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Component;
 

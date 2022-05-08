@@ -1,8 +1,8 @@
-package Kon.resources;
+package Kon.apiResources;
 
-import Kon.models.gameRatings.client.GameRatings;
-import Kon.models.gameRatings.client.GameRatingsRequest;
-import Kon.services.GameRatingsService;
+import Kon.models.consoleSales.client.ConsoleSales;
+import Kon.models.consoleSales.client.ConsoleSalesRequest;
+import Kon.services.ConsoleSalesService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -28,66 +28,69 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 
-@Path("/gameRatings")
+@Path("/consoleSales")
 @Component
-public class GameRatingsResource {
+public class ConsoleSalesResource {
 
     ObjectMapper objectMapper = new ObjectMapper();
 
     @Autowired
-    GameRatingsService gameRatingsService;
+    ConsoleSalesService consoleSalesService;
 
     @Autowired
     HttpServletRequest request;
-
-    @GET
-    @Path("/getall")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    public Response getAll() {
-
-        Collection<GameRatings> collection = gameRatingsService.getAll();
-        GenericEntity<Collection<GameRatings>> entity = new GenericEntity<>(collection) {};
-        return Response.ok(entity).build();
-    }
 
     @POST
     @Path("/post")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     public Response save(final String raw) {
+        // Check the headers to see which type of result to return
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
                 try {
-                    GameRatingsRequest gameRatingsRequest = objectMapper.readValue(raw, GameRatingsRequest.class);
+                    ConsoleSalesRequest consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
                     ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-                    ow.writeValueAsString(gameRatingsService.save(gameRatingsRequest));
-                    return Response.status(201, "[{\"Response\": Successfully added}]").build();
+                    ow.writeValueAsString(consoleSalesService.save(consoleSalesRequest));
+                    return Response.status(201).entity( "[{\"Response\": Successfully added}]").build();
                 } catch (JsonProcessingException e) {
-                    return Response.status(400, "[{\"Response\": "+ e +"}]").build();
+                    // Catch any errors in the saving process
+                    return Response.status(400).entity( "[{\"Response\": "+ e +"}]").build();
                 }
             } else {
-                return Response.status(400, "[{\"Response\": "+ validated +"}]").build();
+                return Response.status(400).entity( "[{\"Response\": "+ validated +"}]").build();
             }
         } else if (request.getHeader("Accept").equals("application/xml") && request.getHeader("Content-Type").equals("application/xml")) {
             String validated = validateXml(raw);
             if (validated.equals("true")) {
                 try {
+                    // XML mapper for the XML body conversion
                     XmlMapper xmlMapper = new XmlMapper();
-                    GameRatingsRequest gameRatingsRequest = xmlMapper.readValue(raw, GameRatingsRequest.class);
-                    gameRatingsService.save(gameRatingsRequest);
-                    return Response.status(201, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+"Success"+"</response></gameRatings>").build();
+                    ConsoleSalesRequest consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
+                    consoleSalesService.save(consoleSalesRequest);
+                    return Response.status(201).entity( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+"Success"+"</response></consoleSales>").build();
                 } catch (IOException e) {
-                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+ e +"</response></gameRatings>").build();
-
+                    return Response.status(400).entity( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
                 }
             } else {
-                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+ validated +"</response></gameRatings>").build();
-
+                return Response.status(400).entity( "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+validated+"</response></consoleSales>").build();
             }
         } else {
-            return Response.status(400, "Please use JSON or XML.").build();
+            return Response.status(400).entity( "Please use JSON or XML.").build();
         }
+    }
+
+
+    @GET
+    @Path("/getall")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    public Response getAll() {
+        // Wrapping the collection in a generic entity so the parsing to XML is possible
+        Collection<ConsoleSales> collection = consoleSalesService.getAll();
+        GenericEntity<Collection<ConsoleSales>> entity = new GenericEntity<>(collection) {
+        };
+        return Response.ok(entity).build();
     }
 
     @PUT
@@ -98,15 +101,15 @@ public class GameRatingsResource {
         if (request.getHeader("Accept").equals("application/json") && request.getHeader("Content-Type").equals("application/json")) {
             String validated = validateJson(raw);
             if (validated.equals("true")) {
-                GameRatingsRequest gameRatingsRequest;
+                ConsoleSalesRequest consoleSalesRequest;
                 try {
-                    gameRatingsRequest = objectMapper.readValue(raw, GameRatingsRequest.class);
-                } catch (JsonProcessingException e) {
+                    consoleSalesRequest = objectMapper.readValue(raw, ConsoleSalesRequest.class);
+                } catch (Exception e) {
                     return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
                 ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
                 try {
-                    ow.writeValueAsString(gameRatingsService.update(id, gameRatingsRequest));
+                    ow.writeValueAsString(consoleSalesService.update(id, consoleSalesRequest));
                 } catch (Exception e) {
                     return Response.status(400, "[{\"Response\": "+e+"}]").build();
                 }
@@ -118,20 +121,20 @@ public class GameRatingsResource {
             String validated = validateXml(raw);
             if (validated.equals("true")) {
                 XmlMapper xmlMapper = new XmlMapper();
-                GameRatingsRequest gameRatingsRequest;
+                ConsoleSalesRequest consoleSalesRequest;
                 try {
-                    gameRatingsRequest = xmlMapper.readValue(raw, GameRatingsRequest.class);
-                } catch (IOException e) {
-                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+e+"</response></gameRatings>").build();
-                }
-                try {
-                gameRatingsService.update(id, gameRatingsRequest);
+                    consoleSalesRequest = xmlMapper.readValue(raw, ConsoleSalesRequest.class);
                 } catch (Exception e) {
-                    return Response.status(404, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+e+"</response></gameRatings>").build();
+                    return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
                 }
-                return Response.status(200, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>Successfully updated</response></gameRatings>").build();
+                try {
+                consoleSalesService.update(id, consoleSalesRequest);
+                } catch (Exception e) {
+                    return Response.status(404, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+e+"</response></consoleSales>").build();
+                }
+                return Response.status(200, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>Successfully updated</response></consoleSales>").build();
             } else {
-                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><gameRatings><response>"+validated+"</response></gameRatings>").build();
+                return Response.status(400, "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><consoleSales><response>"+validated+"</response></consoleSales>").build();
             }
         } else {
             return Response.status(400, "Please use JSON or XML").build();
@@ -142,16 +145,17 @@ public class GameRatingsResource {
     @Path("/delete/{id}")
     public Response delete(@PathParam("id") final Integer id) {
         try {
-            gameRatingsService.delete(id);
+            consoleSalesService.delete(id);
             return Response.status(200, "Successfully deleted").build();
         } catch (Exception e) {
+            // Catch missing IDs
             return Response.status(204, e.toString()).build();
         }
     }
 
     public String validateJson(String gameSalesRequest) {
         try {
-            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/videoGameSalesWithRatings.json");
+            InputStream is = getClass().getResourceAsStream("/data/JsonSchemas/consoleManufacturerSales.json");
             JSONObject rawSchema = new JSONObject(new JSONTokener(is));
             Schema schema = SchemaLoader.load(rawSchema);
             schema.validate(new JSONObject(gameSalesRequest));
@@ -164,7 +168,7 @@ public class GameRatingsResource {
     public String validateXml(String gameSalesRequest) {
         try {
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            javax.xml.validation.Schema schema = schemaFactory.newSchema(new StreamSource(this.getClass().getResourceAsStream("/data/XmlSchemas/videoGameSalesWithRatings.xsd")));
+            javax.xml.validation.Schema schema = schemaFactory.newSchema(new StreamSource(this.getClass().getResourceAsStream("/data/XmlSchemas/consoleManufacturerSales.xsd")));
             Validator validator = schema.newValidator();
             validator.validate(new StreamSource(new ByteArrayInputStream(gameSalesRequest.getBytes())));
             return "true";
@@ -172,4 +176,5 @@ public class GameRatingsResource {
             return e.toString();
         }
     }
+
 }
